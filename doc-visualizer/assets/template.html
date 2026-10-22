@@ -1,0 +1,667 @@
+<meta charset="utf-8">
+<title>Claude 프로젝트 한눈에</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column — header, at-a-glance band (TL;DR, key numbers), section map, then sections that each lead with a picture. */
+:root {
+  --bg: #f4f6f8;
+  --paper: #ffffff;
+  --ink: #18212b;
+  --muted: #5a6776;
+  --line: #d6dde5;
+  --accent: #2b5fa8;
+  --accent-soft: #e6eef9;
+  --good: #2f7a55;
+  --bad: #a8433a;
+  --warn: #9a6a12;
+  --warn-soft: #faf1de;
+  --font-display: "Gowun Batang", "Nanum Myeongjo", "AppleMyungjo", serif;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --step--1: 0.8125rem;
+  --step-0: 0.9688rem;
+  --step-1: 1.1875rem;
+  --step-2: 1.5rem;
+  --step-3: 2.125rem;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161c; --paper: #182029; --ink: #e2e8ef; --muted: #95a3b3; --line: #2b3643;
+    --accent: #7eaaf0; --accent-soft: #1d2a3b; --good: #6cc196; --bad: #ec8b80; --warn: #e2b55a; --warn-soft: #2a2416;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161c; --paper: #182029; --ink: #e2e8ef; --muted: #95a3b3; --line: #2b3643;
+  --accent: #7eaaf0; --accent-soft: #1d2a3b; --good: #6cc196; --bad: #ec8b80; --warn: #e2b55a; --warn-soft: #2a2416;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); }
+
+.page { max-width: 920px; margin: 0 auto; padding-block: 40px 64px; display: flex; flex-direction: column; gap: 36px; }
+
+/* header */
+.doc-head { display: flex; flex-direction: column; gap: 10px; }
+.eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.doc-head h1 { font-family: var(--font-display); font-size: var(--step-3); line-height: 1.2; margin: 0; text-wrap: balance; }
+.doc-head .subtitle { margin: 0; color: var(--muted); font-size: var(--step-1); line-height: 1.5; max-width: 60ch; }
+.source { font-size: var(--step--1); color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.source a { overflow-wrap: anywhere; }
+
+/* at a glance */
+.glance { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; }
+.tldr { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+.tldr p.lead { margin: 0; font-size: var(--step-1); line-height: 1.55; font-weight: 500; text-wrap: pretty; }
+.tldr ul { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 4px; }
+.label { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+
+/* section map */
+.toc { display: flex; flex-wrap: wrap; gap: 8px; counter-reset: toc; }
+.toc a {
+  counter-increment: toc;
+  text-decoration: none; color: var(--ink);
+  border: 1px solid var(--line); background: var(--paper);
+  border-radius: 999px; padding: 4px 12px 4px 6px; font-size: var(--step--1);
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.toc a::before { content: counter(toc); width: 20px; height: 20px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-size: 0.6875rem; font-weight: 600; }
+.toc a:hover { border-color: var(--accent); }
+
+/* sections */
+.sec { display: flex; flex-direction: column; gap: 16px; scroll-margin-top: 16px; }
+.sec-head { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-items: baseline; }
+.sec-num { font-family: var(--font-display); font-size: var(--step-2); color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+.sec h2 { font-family: var(--font-display); font-size: var(--step-2); line-height: 1.3; margin: 0; text-wrap: balance; }
+.sec .sec-lead { grid-column: 2; margin: 0; color: var(--muted); }
+
+.block { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; container-type: inline-size; }
+.block-title { font-weight: 600; font-size: var(--step-0); margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.derived { font-size: 0.6875rem; font-weight: 500; color: var(--muted); border: 1px dashed var(--line); border-radius: 4px; padding: 0 6px; }
+.block.text-block { background: transparent; border: none; padding: 0; }
+.md p { margin: 0 0 0.6em; }
+.md p:last-child, .md ul:last-child, .md ol:last-child { margin-bottom: 0; }
+.md ul, .md ol { margin: 0 0 0.6em; padding-left: 1.2em; }
+.md code { font-family: var(--font-mono); font-size: 0.86em; background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; }
+
+/* stats */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.stat { display: flex; flex-direction: column; gap: 2px; padding: 4px 0; border-top: 3px solid var(--accent); }
+.stat .v { font-family: var(--font-display); font-size: var(--step-3); font-weight: 700; line-height: 1.1; color: var(--accent); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.stat .l { font-weight: 600; font-size: var(--step--1); }
+.stat .n { color: var(--muted); font-size: 0.75rem; line-height: 1.45; }
+.glance .stats { grid-template-columns: 1fr 1fr; align-content: start; }
+.glance .stats-wrap { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+
+/* cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.card { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.card .tag { align-self: flex-start; font-size: 0.6875rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 4px; padding: 0 6px; }
+.card b { font-size: var(--step-0); line-height: 1.4; }
+.card span.t { color: var(--muted); font-size: var(--step--1); line-height: 1.55; }
+
+/* compare */
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: var(--step--1); }
+th, td { padding: 9px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+thead th { font-weight: 600; color: var(--muted); font-size: 0.75rem; letter-spacing: 0.03em; white-space: nowrap; }
+tbody th { font-weight: 600; }
+td.hl, th.hl { background: var(--accent-soft); }
+thead th.hl { color: var(--accent); }
+.yes { color: var(--good); font-weight: 700; }
+.no { color: var(--bad); font-weight: 700; }
+
+/* callout */
+.callout { border-left: 4px solid var(--accent); background: var(--accent-soft); border-radius: 0 10px 10px 0; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; }
+.callout.warn { border-color: var(--warn); background: var(--warn-soft); }
+.callout .label { color: var(--accent); }
+.callout.warn .label { color: var(--warn); }
+
+/* timeline */
+.timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.tl { position: relative; padding: 0 0 18px 34px; display: flex; flex-direction: column; gap: 2px; }
+.tl::before { content: ""; position: absolute; left: 10px; top: 22px; bottom: 0; width: 2px; background: var(--line); }
+.tl:last-child { padding-bottom: 0; }
+.tl:last-child::before { display: none; }
+.tl .dot { position: absolute; left: 2px; top: 4px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); background: var(--paper); }
+.tl[data-status="done"] .dot { border-color: var(--accent); background: var(--accent); }
+.tl[data-status="now"] .dot { border-color: var(--accent); background: var(--paper); box-shadow: 0 0 0 4px var(--accent-soft); }
+.tl[data-status="now"] .dot::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--accent); }
+.tl .when { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
+.tl[data-status="now"] .when { color: var(--accent); font-weight: 500; }
+.tl b { line-height: 1.4; }
+.tl span.t { color: var(--muted); font-size: var(--step--1); }
+
+/* flow with step-through */
+.flow-scroll { overflow-x: auto; min-width: 0; }
+.flow { position: relative; display: flex; gap: 56px; align-items: center; width: max-content; min-width: 100%; justify-content: center; padding: 10px 4px; }
+.flow[data-dir="col"] { flex-direction: column; gap: 44px; width: 100%; }
+.flow .rank { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; }
+.flow[data-dir="col"] .rank { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+.wires { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: visible; }
+.wire { fill: none; stroke: var(--line); stroke-width: 1.75; transition: stroke 0.2s, opacity 0.2s; }
+.wire.on { stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 7 5; }
+.wire.dim, .wire-label.dim { opacity: 0.3; }
+.wire-label { font-family: var(--font-body); font-size: 11px; fill: var(--muted); paint-order: stroke; stroke: var(--paper); stroke-width: 4px; stroke-linejoin: round; }
+.wire-label.on { fill: var(--accent); font-weight: 600; }
+.arrow-head { fill: var(--line); }
+.arrow-head.on { fill: var(--accent); }
+@media (prefers-reduced-motion: no-preference) {
+  .wire.on { animation: wire-run 0.9s linear infinite; }
+  @keyframes wire-run { to { stroke-dashoffset: -12; } }
+}
+.node {
+  position: relative; width: 152px;
+  background: var(--paper); border: 1.5px solid var(--line); border-radius: 10px;
+  padding: 8px 10px 9px; display: flex; flex-direction: column; gap: 2px;
+  transition: border-color 0.2s, opacity 0.2s, box-shadow 0.2s;
+}
+.node[data-kind="store"] { border-style: double; border-width: 3px; }
+.node[data-kind="output"] { border-radius: 10px 10px 18px 18px; }
+.node[data-kind="input"] { border-radius: 18px 10px 10px 18px; }
+.node[data-kind="decision"] { border-style: dashed; }
+.node .kind { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.06em; color: var(--muted); }
+.node b { font-size: var(--step--1); line-height: 1.35; overflow-wrap: anywhere; }
+.node small { font-size: 0.75rem; color: var(--muted); line-height: 1.4; overflow-wrap: anywhere; }
+.node .badge {
+  position: absolute; top: -9px; right: -9px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px;
+  background: var(--paper); border: 1.5px solid var(--line); color: var(--muted);
+  font-size: 0.6875rem; font-weight: 600; display: grid; place-items: center; font-variant-numeric: tabular-nums;
+}
+.node.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.node.on .kind, .node.on .badge { color: var(--accent); border-color: var(--accent); }
+.node.dim { opacity: 0.35; }
+.stepper { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; border-top: 1px solid var(--line); padding-top: 12px; }
+.stepper button { border: 1px solid var(--line); background: var(--paper); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-size: var(--step--1); white-space: nowrap; }
+.stepper button:hover:not([disabled]) { border-color: var(--accent); color: var(--accent); }
+.stepper button[disabled] { opacity: 0.4; cursor: default; }
+.step-text { font-size: var(--step--1); line-height: 1.55; min-width: 0; }
+.step-text .num { display: inline-block; font-weight: 600; color: var(--accent); margin-right: 8px; font-variant-numeric: tabular-nums; }
+
+.foot { border-top: 1px solid var(--line); padding-top: 16px; font-size: 0.75rem; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+
+@media (max-width: 720px) {
+  .page { padding-block: 24px 48px; gap: 28px; }
+  .glance { grid-template-columns: 1fr; }
+  .stepper { grid-template-columns: 1fr 1fr; }
+  .stepper .step-text { grid-column: 1 / -1; grid-row: 1; }
+}
+</style>
+
+<div class="page" id="page"></div>
+
+<!-- Replace this whole JSON block with the document's data. Write "</" inside strings as "<\/". Schema: references/blocks.md -->
+<script id="doc-data" type="application/json">
+{
+  "title": "Claude 프로젝트 한눈에",
+  "subtitle": "자체 채팅 기록과 지식 기반을 가진 작업 공간, 프로젝트의 기능과 플랜별 차이",
+  "source": { "name": "프로젝트란 무엇인가요? (Anthropic 지원 센터)", "url": "https://support.claude.com/ko/articles/9517075", "date": "2026-10-22" },
+  "tldr": "프로젝트는 문서와 지침을 넣어 두고 그 맥락으로 Claude와 대화하는 독립 작업 공간이에요. 모든 플랜에서 쓸 수 있고, 유료 플랜은 지식 용량이 늘어나며, 공유는 Team·Enterprise 전용이에요.",
+  "keypoints": [
+    "지식(파일)과 지침(답하는 방식)을 프로젝트 단위로 정해 둔다",
+    "지식이 컨텍스트 한도에 가까워지면 유료 플랜에서 RAG가 자동으로 켜진다",
+    "새 버전(베타)은 요청을 클라우드 병렬 스레드로 나눠 실행한다"
+  ],
+  "stats": [
+    { "value": "5개", "label": "무료 플랜 프로젝트 수", "note": "무료 사용자가 만들 수 있는 최대 개수" },
+    { "value": "10배", "label": "RAG 확장 용량", "note": "유료 플랜, 응답 품질 유지" },
+    { "value": "30일", "label": "이동 전 안내 기준", "note": "최근 30일 내 쓴 프로젝트는 이메일 안내" },
+    { "value": "2단계", "label": "공유 권한", "note": "볼 수 있음 · 편집할 수 있음" }
+  ],
+  "sections": [
+    {
+      "id": "how",
+      "heading": "프로젝트는 어떻게 동작하나",
+      "lead": "넣어 둔 지식과 지침이 모든 대화의 배경이 돼요.",
+      "blocks": [
+        {
+          "type": "flow",
+          "title": "파일과 지침이 답이 되기까지",
+          "derived": true,
+          "nodes": [
+            { "id": "files", "label": "파일 업로드", "kind": "input", "note": "문서·텍스트·코드" },
+            { "id": "rules", "label": "프로젝트 지침", "kind": "input", "note": "어조, 역할, 관점" },
+            { "id": "kb", "label": "지식 기반", "kind": "store", "note": "프로젝트 안에서만 쓰임" },
+            { "id": "limit", "label": "컨텍스트 한도 근접?", "kind": "decision", "note": "유료 플랜에서 판단" },
+            { "id": "rag", "label": "RAG 모드", "kind": "process", "note": "용량 최대 10배" },
+            { "id": "chat", "label": "프로젝트 채팅", "kind": "output", "note": "맥락을 반영한 답" }
+          ],
+          "edges": [
+            { "from": "files", "to": "kb", "label": "저장" },
+            { "from": "kb", "to": "limit" },
+            { "from": "limit", "to": "rag", "label": "가까우면" },
+            { "from": "limit", "to": "chat", "label": "여유 있으면" },
+            { "from": "rag", "to": "chat", "label": "필요한 부분" },
+            { "from": "rules", "to": "chat", "label": "답하는 방식" }
+          ],
+          "steps": [
+            { "focus": ["files", "kb"], "text": "관련 문서, 텍스트, 코드를 올리면 프로젝트의 지식 기반이 돼요." },
+            { "focus": ["limit"], "text": "지식이 많아져 컨텍스트 한도에 가까워지는지가 갈림길이에요." },
+            { "focus": ["rag"], "text": "유료 플랜에서는 이때 RAG가 자동으로 켜져서 용량을 최대 10배까지 늘려요." },
+            { "focus": ["rules", "chat"], "text": "지침은 지식과 따로, 답하는 어조와 관점을 정해요." }
+          ]
+        },
+        {
+          "type": "cards",
+          "items": [
+            { "tag": "지식", "title": "프로젝트 지식", "text": "문서·텍스트·코드를 올리면 Claude가 그 프로젝트 채팅의 배경을 더 잘 이해해요." },
+            { "tag": "지침", "title": "프로젝트 지침", "text": "공식적인 어조, 특정 역할이나 산업 관점처럼 답하는 방식을 조정해요." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plans",
+      "heading": "플랜별로 쓸 수 있는 것",
+      "lead": "기본 기능은 모두 같고, 용량 확장과 공유에서 갈려요.",
+      "blocks": [
+        {
+          "type": "compare",
+          "derived": true,
+          "columns": ["기능", "무료", "Pro · Max", "Team · Enterprise"],
+          "rows": [
+            ["프로젝트 만들기", "최대 5개", "✓", "✓"],
+            ["지식 · 지침", "✓", "✓", "✓"],
+            ["RAG 확장 (최대 10배)", "✗", "✓", "✓"],
+            ["프로젝트 공유", "✗", "✗", "✓"]
+          ],
+          "highlight": 3
+        }
+      ]
+    },
+    {
+      "id": "share",
+      "heading": "공유와 권한 (Team · Enterprise)",
+      "lead": "권한은 두 단계, 공유 방법은 세 가지예요.",
+      "blocks": [
+        {
+          "type": "cards",
+          "items": [
+            { "tag": "권한", "title": "볼 수 있음", "text": "콘텐츠, 지식, 지침을 보고 채팅할 수 있지만 편집은 못 해요." },
+            { "tag": "권한", "title": "편집할 수 있음", "text": "지침과 지식을 수정하고, 구성원을 추가·제거하고, 설정을 바꿔요." },
+            { "tag": "공유", "title": "개별 · 대량 · 조직 전체", "text": "이메일로 한 명씩, 이메일 목록으로 여러 명, 또는 조직 전체에 공개해요." }
+          ]
+        },
+        { "type": "callout", "tone": "warn", "title": "관리자가 공유를 끄면", "text": "기존 공유는 유지되고 새 공유만 막혀요. 공개 프로젝트도 함께 꺼지고, Enterprise에서는 역할별로 끌 수 있어요." }
+      ]
+    },
+    {
+      "id": "beta",
+      "heading": "새 버전 (베타)",
+      "lead": "프로젝트 하나가 하나의 대화가 되고, 작업이 클라우드 병렬 스레드로 나뉘어요.",
+      "blocks": [
+        {
+          "type": "timeline",
+          "items": [
+            { "when": "지금", "title": "Claude Code 사용자부터 출시", "text": "선택된 Pro · Max 구독자, 일부 기존 프로젝트 이동", "status": "now" },
+            { "when": "이동 전", "title": "이메일 안내", "text": "최근 30일 내 사용한 프로젝트 대상. 지침·파일·채팅 기록·예약 작업 모두 이동", "status": "now" },
+            { "when": "이후", "title": "chat · Cowork · Team · Enterprise로 확대", "text": "대기 목록 신청 가능. 그때까지 chat · Cowork 프로젝트는 현재 버전 유지", "status": "next" }
+          ]
+        },
+        { "type": "callout", "tone": "info", "title": "사용량", "text": "일반 사용과 같은 플랜 사용량에서 빠지지만, 스레드를 동시에 여러 개 돌리면 더 빨리 줄어들어요." }
+      ]
+    }
+  ]
+}
+</script>
+
+<script>
+const DATA = JSON.parse(document.getElementById("doc-data").textContent);
+const $page = document.getElementById("page");
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+/* minimal markdown: escaped text, **bold**, `code`, https links, - lists, paragraphs */
+function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function inline(s) {
+  return String(s).split(/(`[^`]+`)/g).map((p) => /^`[^`]+`$/.test(p) ? "<code>" + esc(p.slice(1, -1)) + "</code>" :
+    esc(p).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')).join("");
+}
+function md(src) {
+  const out = []; let para = [], list = [];
+  const flush = () => {
+    if (para.length) { out.push("<p>" + para.map(inline).join("<br>") + "</p>"); para = []; }
+    if (list.length) { out.push("<ul>" + list.map((i) => "<li>" + inline(i) + "</li>").join("") + "</ul>"); list = []; }
+  };
+  for (const line of String(src).split("\n")) {
+    const m = line.match(/^\s*[-*]\s+(.*)/);
+    if (m) { if (para.length) { out.push("<p>" + para.map(inline).join("<br>") + "</p>"); para = []; } list.push(m[1]); }
+    else if (!line.trim()) flush();
+    else { if (list.length) flush(); para.push(line); }
+  }
+  flush();
+  return out.join("");
+}
+
+function blockShell(b, extraClass) {
+  const box = el("div", "block" + (extraClass ? " " + extraClass : ""));
+  if (b.title || b.derived) {
+    const t = el("p", "block-title", b.title || "");
+    if (b.derived) t.append(el("span", "derived", "원문을 바탕으로 정리"));
+    box.append(t);
+  }
+  return box;
+}
+
+function renderStats(items) {
+  const g = el("div", "stats");
+  for (const s of items || []) {
+    const c = el("div", "stat");
+    c.append(el("span", "v", s.value), el("span", "l", s.label));
+    if (s.note) c.append(el("span", "n", s.note));
+    g.append(c);
+  }
+  return g;
+}
+
+function renderCards(b) {
+  const box = blockShell(b);
+  const g = el("div", "cards");
+  for (const c of b.items || []) {
+    const card = el("div", "card");
+    if (c.tag) card.append(el("span", "tag", c.tag));
+    card.append(el("b", null, c.title));
+    if (c.text) card.append(el("span", "t", c.text));
+    g.append(card);
+  }
+  box.append(g);
+  return box;
+}
+
+function cell(tag, v, hl) {
+  const c = el(tag, hl ? "hl" : null);
+  const s = String(v ?? "");
+  if (/^(✓|O|o|예|가능)$/.test(s)) c.append(el("span", "yes", "✓"));
+  else if (/^(✗|X|x|아니오|불가)$/.test(s)) c.append(el("span", "no", "✗"));
+  else c.textContent = s;
+  return c;
+}
+function renderCompare(b) {
+  const box = blockShell(b);
+  const wrap = el("div", "tbl");
+  const t = el("table");
+  const hl = Number.isInteger(b.highlight) ? b.highlight : -1;
+  const thead = el("thead"), tr = el("tr");
+  (b.columns || []).forEach((c, i) => { const th = el("th", i === hl ? "hl" : null, c); th.scope = "col"; tr.append(th); });
+  thead.append(tr);
+  const tbody = el("tbody");
+  for (const row of b.rows || []) {
+    const r = el("tr");
+    row.forEach((v, i) => { const c = cell(i === 0 ? "th" : "td", v, i === hl); if (i === 0) { c.scope = "row"; c.textContent = String(v); } r.append(c); });
+    tbody.append(r);
+  }
+  t.append(thead, tbody);
+  wrap.append(t);
+  box.append(wrap);
+  return box;
+}
+
+function renderCallout(b) {
+  const c = el("div", "callout" + (b.tone === "warn" ? " warn" : ""));
+  c.append(el("p", "label", b.title || (b.tone === "warn" ? "주의" : "참고")));
+  const body = el("div", "md");
+  body.innerHTML = md(b.text || "");
+  c.append(body);
+  return c;
+}
+
+function renderTimeline(b) {
+  const box = blockShell(b);
+  const ol = el("ol", "timeline");
+  for (const it of b.items || []) {
+    const li = el("li", "tl");
+    li.dataset.status = ["done", "now", "next"].includes(it.status) ? it.status : "next";
+    li.append(el("span", "dot"));
+    if (it.when) li.append(el("span", "when", it.when));
+    li.append(el("b", null, it.title));
+    if (it.text) li.append(el("span", "t", it.text));
+    ol.append(li);
+  }
+  box.append(ol);
+  return box;
+}
+
+function renderText(b) {
+  const box = blockShell(b, b.title || b.derived ? "" : "text-block");
+  const d = el("div", "md");
+  d.innerHTML = md(b.md || "");
+  box.append(d);
+  return box;
+}
+
+/* flow: longest-path ranks left → right, SVG wires, step-through highlighting */
+const KIND = { input: "입력", process: "처리", store: "저장", output: "결과", concept: "개념", decision: "판단" };
+let flowSeq = 0;
+function renderFlow(b) {
+  const box = blockShell(b);
+  const uid = "f" + ++flowSeq;
+  const nodes = (b.nodes || []).filter((n) => n && n.id && n.label);
+  const ids = new Set(nodes.map((n) => n.id));
+  const edges = (b.edges || []).filter((e) => ids.has(e.from) && ids.has(e.to) && e.from !== e.to);
+  const steps = (b.steps || []).filter((s) => s && s.text).map((s) => ({ focus: (s.focus || []).filter((x) => ids.has(x)), text: s.text }));
+
+  const rank = Object.fromEntries(nodes.map((n) => [n.id, 0]));
+  for (let k = 0; k < nodes.length; k++) {
+    let changed = false;
+    for (const e of edges) if (rank[e.from] + 1 > rank[e.to] && rank[e.from] + 1 < nodes.length) { rank[e.to] = rank[e.from] + 1; changed = true; }
+    if (!changed) break;
+  }
+  const firstStep = {};
+  steps.forEach((s, i) => s.focus.forEach((id) => { if (!(id in firstStep)) firstStep[id] = i; }));
+
+  const scroll = el("div", "flow-scroll");
+  const flow = el("div", "flow");
+  flow.dataset.dir = "row";
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.classList.add("wires");
+  svg.setAttribute("aria-hidden", "true");
+  flow.append(svg);
+
+  const nodeEls = {};
+  const maxRank = Math.max(0, ...Object.values(rank));
+  for (let r = 0; r <= maxRank; r++) {
+    const col = el("div", "rank");
+    for (const n of nodes.filter((n) => rank[n.id] === r)) {
+      const ne = el("div", "node");
+      ne.dataset.kind = KIND[n.kind] ? n.kind : "concept";
+      ne.append(el("span", "kind", KIND[ne.dataset.kind]), el("b", null, n.label));
+      if (n.note) ne.append(el("small", null, n.note));
+      if (n.id in firstStep) ne.append(el("span", "badge", String(firstStep[n.id] + 1)));
+      nodeEls[n.id] = ne;
+      col.append(ne);
+    }
+    if (col.childElementCount) flow.append(col);
+  }
+  scroll.append(flow);
+  box.append(scroll);
+
+  let wireEls = [], current = -1;
+  const draw = () => {
+    const bx = flow.getBoundingClientRect();
+    if (!bx.width) return;
+    const row = flow.dataset.dir === "row";
+    svg.setAttribute("viewBox", `0 0 ${bx.width} ${bx.height}`);
+    svg.setAttribute("width", bx.width);
+    svg.setAttribute("height", bx.height);
+    svg.replaceChildren();
+    const defs = document.createElementNS(NS, "defs");
+    for (const k of ["off", "on"]) {
+      const mk = document.createElementNS(NS, "marker");
+      mk.setAttribute("id", `${uid}-${k}`);
+      mk.setAttribute("viewBox", "0 0 10 10");
+      mk.setAttribute("refX", "9"); mk.setAttribute("refY", "5");
+      mk.setAttribute("markerWidth", "7"); mk.setAttribute("markerHeight", "7");
+      mk.setAttribute("markerUnits", "userSpaceOnUse");
+      mk.setAttribute("orient", "auto");
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", "M0,0 L10,5 L0,10 z");
+      p.setAttribute("class", "arrow-head" + (k === "on" ? " on" : ""));
+      mk.append(p);
+      defs.append(mk);
+    }
+    svg.append(defs);
+    wireEls = edges.map((e) => {
+      const a = nodeEls[e.from].getBoundingClientRect(), c = nodeEls[e.to].getBoundingClientRect();
+      let x1, y1, x2, y2, d;
+      if (row) {
+        x1 = a.right - bx.left; y1 = a.top + a.height / 2 - bx.top;
+        x2 = c.left - bx.left - 2; y2 = c.top + c.height / 2 - bx.top;
+        const dx = Math.max(28, Math.abs(x2 - x1) / 2);
+        d = `M${x1},${y1} C${x1 + dx},${y1} ${x2 - dx},${y2} ${x2},${y2}`;
+      } else {
+        x1 = a.left + a.width / 2 - bx.left; y1 = a.bottom - bx.top;
+        x2 = c.left + c.width / 2 - bx.left; y2 = c.top - bx.top - 2;
+        const dy = Math.max(22, Math.abs(y2 - y1) / 2);
+        d = `M${x1},${y1} C${x1},${y1 + dy} ${x2},${y2 - dy} ${x2},${y2}`;
+      }
+      const path = document.createElementNS(NS, "path");
+      path.setAttribute("d", d);
+      path.setAttribute("class", "wire");
+      svg.append(path);
+      let text = null;
+      if (e.label) {
+        text = document.createElementNS(NS, "text");
+        text.setAttribute("class", "wire-label");
+        text.setAttribute("x", (x1 + x2) / 2 + (row ? 0 : 8));
+        text.setAttribute("y", (y1 + y2) / 2 + (row ? -7 : 4));
+        text.setAttribute("text-anchor", row ? "middle" : "start");
+        text.textContent = e.label;
+        svg.append(text);
+      }
+      return { e, path, text };
+    });
+    apply(current);
+  };
+
+  const stepper = el("div", "stepper");
+  const prev = el("button", null, "이전"); prev.type = "button";
+  const next = el("button"); next.type = "button";
+  const stepText = el("div", "step-text"); stepText.setAttribute("aria-live", "polite");
+  stepper.append(prev, stepText, next);
+  if (steps.length) box.append(stepper);
+
+  const paint = (onNodes, onEdge) => {
+    for (const n of nodes) {
+      const on = onNodes ? onNodes.has(n.id) : false;
+      nodeEls[n.id].classList.toggle("on", on);
+      nodeEls[n.id].classList.toggle("dim", !!onNodes && !on);
+    }
+    for (const w of wireEls) {
+      const on = onNodes ? onEdge(w.e) : false, dim = !!onNodes && !on;
+      w.path.classList.toggle("on", on); w.path.classList.toggle("dim", dim);
+      w.path.setAttribute("marker-end", `url(#${uid}-${on ? "on" : "off"})`);
+      if (w.text) { w.text.classList.toggle("on", on); w.text.classList.toggle("dim", dim); }
+    }
+  };
+  function apply(i) {
+    current = i;
+    stepText.replaceChildren();
+    if (i < 0) {
+      paint(null);
+      stepText.append(el("span", "num", "전체"), "'따라가기'를 누르면 흐름을 한 단계씩 짚어 드려요.");
+    } else {
+      const focus = new Set(steps[i].focus), before = new Set(i > 0 ? steps[i - 1].focus : []);
+      paint(focus, (e) => (focus.has(e.from) && focus.has(e.to)) || (before.has(e.from) && focus.has(e.to)));
+      stepText.append(el("span", "num", `${i + 1} / ${steps.length}`), steps[i].text);
+    }
+    prev.disabled = i < 0;
+    next.disabled = i >= steps.length - 1;
+    next.textContent = i < 0 ? "따라가기" : "다음";
+  }
+  prev.onclick = () => apply(current - 1);
+  next.onclick = () => apply(current + 1);
+
+  new ResizeObserver(() => {
+    const dir = scroll.clientWidth < 520 ? "col" : "row";
+    if (flow.dataset.dir !== dir) flow.dataset.dir = dir;
+    requestAnimationFrame(draw);
+  }).observe(scroll);
+  apply(-1);
+  return box;
+}
+
+const RENDER = { flow: renderFlow, timeline: renderTimeline, compare: renderCompare, cards: renderCards, callout: renderCallout, text: renderText,
+  stats: (b) => { const box = blockShell(b); box.append(renderStats(b.items)); return box; } };
+
+/* page */
+const head = el("header", "doc-head");
+head.append(el("span", "eyebrow", "문서 정리"), el("h1", null, DATA.title));
+if (DATA.subtitle) head.append(el("p", "subtitle", DATA.subtitle));
+if (DATA.source) {
+  const s = el("div", "source");
+  const name = el("span", null, "원문: ");
+  if (DATA.source.url && /^https:\/\//.test(DATA.source.url)) {
+    const a = el("a", null, DATA.source.name || DATA.source.url);
+    a.href = DATA.source.url; a.target = "_blank"; a.rel = "noopener";
+    name.append(a);
+  } else name.append(DATA.source.name || "");
+  s.append(name);
+  if (DATA.source.date) s.append(el("span", null, "정리한 날: " + DATA.source.date));
+  head.append(s);
+}
+$page.append(head);
+
+if (DATA.tldr || (DATA.keypoints || []).length || (DATA.stats || []).length) {
+  const g = el("section", "glance");
+  const t = el("div", "tldr");
+  t.append(el("p", "label", "한 줄 요약"));
+  if (DATA.tldr) t.append(el("p", "lead", DATA.tldr));
+  if ((DATA.keypoints || []).length) {
+    const ul = el("ul");
+    for (const k of DATA.keypoints) { const li = el("li"); li.innerHTML = inline(k); ul.append(li); }
+    t.append(ul);
+  }
+  g.append(t);
+  if ((DATA.stats || []).length) {
+    const w = el("div", "stats-wrap");
+    w.append(el("p", "label", "핵심 수치"), renderStats(DATA.stats));
+    g.append(w);
+  } else g.style.gridTemplateColumns = "1fr";
+  $page.append(g);
+}
+
+const secs = DATA.sections || [];
+if (secs.length > 1) {
+  const nav = el("nav", "toc");
+  nav.setAttribute("aria-label", "목차");
+  secs.forEach((s, i) => { const a = el("a", null, s.heading); a.href = "#" + (s.id || "s" + (i + 1)); nav.append(a); });
+  $page.append(nav);
+}
+
+secs.forEach((s, i) => {
+  const sec = el("section", "sec");
+  sec.id = s.id || "s" + (i + 1);
+  const h = el("div", "sec-head");
+  h.append(el("span", "sec-num", String(i + 1).padStart(2, "0")), el("h2", null, s.heading));
+  if (s.lead) h.append(el("p", "sec-lead", s.lead));
+  sec.append(h);
+  for (const b of s.blocks || []) {
+    const fn = RENDER[b.type];
+    if (fn) sec.append(fn(b));
+  }
+  $page.append(sec);
+});
+
+const foot = el("footer", "foot");
+foot.append(el("span", null, "원문을 바탕으로 정리한 페이지예요. 수치와 조건은 원문 표현을 따랐고, '원문을 바탕으로 정리' 표시가 있는 그림은 원문 내용을 재구성한 거예요."));
+if (DATA.source && DATA.source.url) foot.append(el("span", null, "정확한 최신 내용은 원문에서 확인하세요."));
+$page.append(foot);
+</script>
